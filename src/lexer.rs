@@ -283,10 +283,11 @@ impl Lexer {
         if chars.is_empty() {
             Err(LexerError::EmptyNum)
         } else {
-            Ok(LexToken::IntConst(i32::from_str_radix(
-                &chars.into_iter().collect::<String>(),
-                16,
-            )?))
+            let num_text = chars.into_iter().collect::<String>();
+
+            Ok(LexToken::IntConst(
+                u32::from_str_radix(&num_text, 16)? as i32
+            ))
         }
     }
 
@@ -298,13 +299,11 @@ impl Lexer {
             }
             self.next_pos += 1;
         }
-        Ok(LexToken::IntConst(
-            self.text[start..self.next_pos]
-                .iter()
-                .cloned()
-                .collect::<String>()
-                .parse()?,
-        ))
+        let num_text = self.text[start..self.next_pos]
+            .iter()
+            .cloned()
+            .collect::<String>();
+        Ok(LexToken::IntConst(num_text.parse::<u32>()? as i32))
     }
 
     const RESERVED: [&str; 21] = [
