@@ -228,7 +228,11 @@ impl Parser {
 
     fn parse_lvalue(&mut self) -> Result<Ident, ParserError> {
         match self.current() {
-            Some(lexer::LexToken::Ident(ident)) => Ok(ident.to_owned()),
+            Some(lexer::LexToken::Ident(ident)) => {
+                let ident = ident.to_owned();
+                self.next();
+                Ok(ident)
+            }
             Some(lexer::LexToken::ParenOpen) => {
                 self.next();
                 let res = self.parse_lvalue()?;
