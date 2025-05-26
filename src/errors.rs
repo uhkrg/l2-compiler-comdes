@@ -24,3 +24,20 @@ impl From<ParseIntError> for LexerError {
         LexerError::IntSizeError(value.to_string())
     }
 }
+
+#[derive(Debug)]
+pub enum ParserError {
+    EOF(String),
+    Mismatch { found: String, expected: String },
+}
+
+impl Display for ParserError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ParserError::EOF(missing) => write!(f, "end of file, but expected {missing}"),
+            ParserError::Mismatch { found, expected } => {
+                write!(f, "expected {expected} but found {found}")
+            }
+        }
+    }
+}

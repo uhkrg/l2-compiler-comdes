@@ -2,13 +2,15 @@ use std::char;
 
 use crate::errors::LexerError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LexToken {
     BraceOpen,
     BraceClose,
     ParenOpen,
     ParenClose,
     Semicolon,
+    QuestionMark,
+    Colon,
     Unop(Unop),
     Binop(Binop),
     Asnop(Option<Binop>),
@@ -18,13 +20,14 @@ pub enum LexToken {
     Reserved(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Unop {
     LogNot,
     BitNot,
+    Neg,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Binop {
     Less,
     Leq,
@@ -75,6 +78,8 @@ impl Lexer {
             '{' => Some(LexToken::BraceOpen),
             '}' => Some(LexToken::BraceClose),
             ';' => Some(LexToken::Semicolon),
+            '?' => Some(LexToken::QuestionMark),
+            ':' => Some(LexToken::Colon),
             '!' => Some(self.one_or_two(
                 LexToken::Unop(Unop::LogNot),
                 '=',
