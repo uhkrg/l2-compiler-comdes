@@ -1,3 +1,5 @@
+pub mod elaborator;
+
 use crate::{
     errors::ParserError,
     lexer::{self},
@@ -11,20 +13,20 @@ pub struct AST {
 pub type Block = Vec<Statement>;
 pub type Ident = String;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Type {
     Int,
     Bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum SimpStatement {
     Assign(Ident, Option<lexer::Binop>, Expression),
     Declaration(Type, Ident),
     Initialisation(Type, Ident, Expression),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Statement {
     Simp(SimpStatement),
     Block(Block),
@@ -42,7 +44,7 @@ pub enum Statement {
     Return(Expression),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     True,
     False,

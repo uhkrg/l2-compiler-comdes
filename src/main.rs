@@ -1,6 +1,9 @@
 use std::process::exit;
 
-use l2_compiler_comdes::{lexer, parser};
+use l2_compiler_comdes::{
+    lexer,
+    parser::{self, elaborator},
+};
 
 fn main() {
     let input_file = std::env::args()
@@ -25,6 +28,8 @@ fn main() {
             exit(42);
         }
     };
-
     println!("{parsed:?}\n");
+
+    let elaborated = elaborator::elaborate(parsed);
+    println!("{elaborated:?}\n");
 }
