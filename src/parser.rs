@@ -381,100 +381,80 @@ impl Parser {
     }
 
     fn parse_exp1(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp2()?;
+        let mut fst = self.parse_exp2()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::LogOr)) = self.current() {
+        while let Some(lexer::LexToken::Binop(lexer::Binop::LogOr)) = self.current() {
             self.next();
-            let other = self.parse_exp1()?;
+            let other = self.parse_exp2()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::LogOr,
-                Box::new(other),
-            ));
+            fst = Expression::Binop(Box::new(fst), lexer::Binop::LogOr, Box::new(other));
         }
 
         Ok(fst)
     }
 
     fn parse_exp2(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp3()?;
+        let mut fst = self.parse_exp3()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::LogAnd)) = self.current() {
+        while let Some(lexer::LexToken::Binop(lexer::Binop::LogAnd)) = self.current() {
             self.next();
-            let other = self.parse_exp2()?;
+            let other = self.parse_exp3()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::LogAnd,
-                Box::new(other),
-            ));
+            fst = Expression::Binop(Box::new(fst), lexer::Binop::LogAnd, Box::new(other));
         }
 
         Ok(fst)
     }
 
     fn parse_exp3(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp4()?;
+        let mut fst = self.parse_exp4()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::BitOr)) = self.current() {
+        while let Some(lexer::LexToken::Binop(lexer::Binop::BitOr)) = self.current() {
             self.next();
-            let other = self.parse_exp3()?;
+            let other = self.parse_exp4()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::BitOr,
-                Box::new(other),
-            ));
+            fst = Expression::Binop(Box::new(fst), lexer::Binop::BitOr, Box::new(other));
         }
 
         Ok(fst)
     }
 
     fn parse_exp4(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp5()?;
+        let mut fst = self.parse_exp5()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::BitXor)) = self.current() {
+        while let Some(lexer::LexToken::Binop(lexer::Binop::BitXor)) = self.current() {
             self.next();
-            let other = self.parse_exp4()?;
+            let other = self.parse_exp5()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::BitXor,
-                Box::new(other),
-            ));
+            fst = Expression::Binop(Box::new(fst), lexer::Binop::BitXor, Box::new(other));
         }
 
         Ok(fst)
     }
 
     fn parse_exp5(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp6()?;
+        let mut fst = self.parse_exp6()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::BitAnd)) = self.current() {
+        while let Some(lexer::LexToken::Binop(lexer::Binop::BitAnd)) = self.current() {
             self.next();
-            let other = self.parse_exp5()?;
+            let other = self.parse_exp6()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::BitAnd,
-                Box::new(other),
-            ));
+            fst = Expression::Binop(Box::new(fst), lexer::Binop::BitAnd, Box::new(other));
         }
 
         Ok(fst)
     }
 
     fn parse_exp6(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp7()?;
+        let mut fst = self.parse_exp7()?;
 
-        if let Some(lexer::LexToken::Binop(op)) = self.current() {
+        while let Some(lexer::LexToken::Binop(op)) = self.current() {
             let op = op.clone();
             if op == lexer::Binop::Eq || op == lexer::Binop::Neq {
                 self.next();
-                let other = self.parse_exp6()?;
+                let other = self.parse_exp7()?;
 
-                return Ok(Expression::Binop(Box::new(fst), op, Box::new(other)));
+                fst = Expression::Binop(Box::new(fst), op, Box::new(other));
             }
         }
 
@@ -482,9 +462,9 @@ impl Parser {
     }
 
     fn parse_exp7(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp8()?;
+        let mut fst = self.parse_exp8()?;
 
-        if let Some(lexer::LexToken::Binop(op)) = self.current() {
+        while let Some(lexer::LexToken::Binop(op)) = self.current() {
             let op = op.clone();
             if op == lexer::Binop::Less
                 || op == lexer::Binop::Leq
@@ -492,9 +472,9 @@ impl Parser {
                 || op == lexer::Binop::Geq
             {
                 self.next();
-                let other = self.parse_exp7()?;
+                let other = self.parse_exp8()?;
 
-                return Ok(Expression::Binop(Box::new(fst), op, Box::new(other)));
+                fst = Expression::Binop(Box::new(fst), op, Box::new(other));
             }
         }
 
@@ -502,15 +482,15 @@ impl Parser {
     }
 
     fn parse_exp8(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp9()?;
+        let mut fst = self.parse_exp9()?;
 
-        if let Some(lexer::LexToken::Binop(op)) = self.current() {
+        while let Some(lexer::LexToken::Binop(op)) = self.current() {
             let op = op.clone();
             if op == lexer::Binop::ShiftL || op == lexer::Binop::ShiftR {
                 self.next();
-                let other = self.parse_exp8()?;
+                let other = self.parse_exp9()?;
 
-                return Ok(Expression::Binop(Box::new(fst), op, Box::new(other)));
+                fst = Expression::Binop(Box::new(fst), op, Box::new(other));
             }
         }
 
@@ -518,42 +498,37 @@ impl Parser {
     }
 
     fn parse_exp9(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp10()?;
+        let mut fst = self.parse_exp10()?;
 
-        if let Some(lexer::LexToken::Binop(lexer::Binop::Add)) = self.current() {
-            self.next();
-            let other = self.parse_exp9()?;
+        loop {
+            if let Some(lexer::LexToken::Binop(lexer::Binop::Add)) = self.current() {
+                self.next();
+                let other = self.parse_exp10()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::Add,
-                Box::new(other),
-            ));
-        }
-        if let Some(lexer::LexToken::Minus) = self.current() {
-            self.next();
-            let other = self.parse_exp9()?;
+                fst = Expression::Binop(Box::new(fst), lexer::Binop::Add, Box::new(other));
+            } else if let Some(lexer::LexToken::Minus) = self.current() {
+                self.next();
+                let other = self.parse_exp10()?;
 
-            return Ok(Expression::Binop(
-                Box::new(fst),
-                lexer::Binop::Minus,
-                Box::new(other),
-            ));
+                fst = Expression::Binop(Box::new(fst), lexer::Binop::Minus, Box::new(other));
+            } else {
+                break;
+            }
         }
 
         Ok(fst)
     }
 
     fn parse_exp10(&mut self) -> Result<Expression, ParserError> {
-        let fst = self.parse_exp11()?;
+        let mut fst = self.parse_exp11()?;
 
-        if let Some(lexer::LexToken::Binop(op)) = self.current() {
+        while let Some(lexer::LexToken::Binop(op)) = self.current() {
             let op = op.clone();
             if op == lexer::Binop::Mul || op == lexer::Binop::Div || op == lexer::Binop::Mod {
                 self.next();
                 let other = self.parse_exp10()?;
 
-                return Ok(Expression::Binop(Box::new(fst), op, Box::new(other)));
+                fst = Expression::Binop(Box::new(fst), op, Box::new(other));
             }
         }
 
