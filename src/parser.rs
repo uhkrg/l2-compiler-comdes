@@ -455,6 +455,8 @@ impl Parser {
                 let other = self.parse_exp7()?;
 
                 fst = Expression::Binop(Box::new(fst), op, Box::new(other));
+            } else {
+                break;
             }
         }
 
@@ -475,6 +477,8 @@ impl Parser {
                 let other = self.parse_exp8()?;
 
                 fst = Expression::Binop(Box::new(fst), op, Box::new(other));
+            } else {
+                break;
             }
         }
 
@@ -491,6 +495,8 @@ impl Parser {
                 let other = self.parse_exp9()?;
 
                 fst = Expression::Binop(Box::new(fst), op, Box::new(other));
+            } else {
+                break;
             }
         }
 
@@ -526,9 +532,11 @@ impl Parser {
             let op = op.clone();
             if op == lexer::Binop::Mul || op == lexer::Binop::Div || op == lexer::Binop::Mod {
                 self.next();
-                let other = self.parse_exp10()?;
+                let other = self.parse_exp11()?;
 
                 fst = Expression::Binop(Box::new(fst), op, Box::new(other));
+            } else {
+                break;
             }
         }
 
