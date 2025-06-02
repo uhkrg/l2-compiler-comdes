@@ -182,8 +182,8 @@ impl Parser {
         }
     }
 
-    fn parse_simp(&mut self) -> Result<SimpStatement, ParserError> {
-        let res = match self.current() {
+    fn parse_simp_wo_semi(&mut self) -> Result<SimpStatement, ParserError> {
+        match self.current() {
             Some(lexer::LexToken::Ident(_)) => self.parse_assignment(),
             Some(lexer::LexToken::ParenOpen) => self.parse_assignment(),
             Some(lexer::LexToken::Reserved(word)) => match word.as_str() {
@@ -201,7 +201,11 @@ impl Parser {
             None => Err(ParserError::EOF(
                 "identifier, int, bool or open paren".to_string(),
             )),
-        }?;
+        }
+    }
+
+    fn parse_simp(&mut self) -> Result<SimpStatement, ParserError> {
+        let res = self.parse_simp_wo_semi()?;
 
         self.expect(lexer::LexToken::Semicolon)?;
 
@@ -339,11 +343,11 @@ impl Parser {
             Some(self.parse_simp()?)
         };
         let cond = self.parse_expression()?;
-        let step = if self.current() == Some(&lexer::LexToken::Semicolon) {
-            self.next();
+        self.expect(lexer::LexToken::Semicolon)?;
+        let step = if self.current() == Some(&lexer::LexToken::ParenClose) {
             None
         } else {
-            Some(self.parse_simp()?)
+            Some(self.parse_simp_wo_semi()?)
         };
         self.expect(lexer::LexToken::ParenClose)?;
         let body = self.expect_statement()?;
