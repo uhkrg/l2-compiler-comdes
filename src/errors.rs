@@ -10,6 +10,15 @@ pub enum LexerError {
     EmptyNum,
 }
 
+impl LexerError {
+    pub fn error_code(&self) -> i32 {
+        match self {
+            LexerError::IntSizeError(_) => 7,
+            _ => 42,
+        }
+    }
+}
+
 impl Display for LexerError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {

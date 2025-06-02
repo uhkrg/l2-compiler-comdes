@@ -17,7 +17,7 @@ fn main() {
         Ok(lexed) => lexed,
         Err(error) => {
             eprintln!("{error}");
-            exit(42);
+            exit(error.error_code());
         }
     };
     println!("{lexed:?}\n");
