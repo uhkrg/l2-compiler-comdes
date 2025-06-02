@@ -114,10 +114,13 @@ impl Parser {
         self.expect(lexer::LexToken::Ident(String::from("main")))?;
         self.expect(lexer::LexToken::ParenOpen)?;
         self.expect(lexer::LexToken::ParenClose)?;
+        let program = self.parse_block()?;
 
-        Ok(AST {
-            program: self.parse_block()?,
-        })
+        if let Some(token) = self.current() {
+            return Err(ParserError::NoEOF(format!("{token:?}")));
+        }
+
+        Ok(AST { program })
     }
 
     fn parse_block(&mut self) -> Result<Block, ParserError> {
