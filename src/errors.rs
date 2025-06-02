@@ -58,12 +58,18 @@ impl Display for ParserError {
 #[derive(Debug)]
 pub enum StaticAnalysisError {
     TypeError(TypeError),
+    BreakContinuePlacement,
+    DeclareStep,
+    MissingReturn,
 }
 
 impl Display for StaticAnalysisError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             StaticAnalysisError::TypeError(e) => write!(f, "problem in type check: {e}"),
+            Self::BreakContinuePlacement => write!(f, "found a break or continue outside a loop"),
+            Self::DeclareStep => write!(f, "a for loop step may not declare a variable"),
+            Self::MissingReturn => write!(f, "missing a return on at least one control path"),
         }
     }
 }
