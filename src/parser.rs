@@ -147,10 +147,12 @@ impl Parser {
                 "while" => self.parse_while().map(Option::Some),
                 "for" => self.parse_for().map(Option::Some),
                 "continue" => {
+                    self.next();
                     self.expect(lexer::LexToken::Semicolon)?;
                     Ok(Some(Statement::Continue))
                 }
                 "break" => {
+                    self.next();
                     self.expect(lexer::LexToken::Semicolon)?;
                     Ok(Some(Statement::Break))
                 }
