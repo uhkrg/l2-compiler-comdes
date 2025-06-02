@@ -226,7 +226,10 @@ impl Lexer {
                 self.parse_comment()?;
                 Ok(None)
             }
-            Some('=') => Ok(Some(LexToken::Asnop(Some(Binop::Div)))),
+            Some('=') => {
+                self.next_pos += 1;
+                Ok(Some(LexToken::Asnop(Some(Binop::Div))))
+            }
             _ => Ok(Some(LexToken::Binop(Binop::Div))),
         }
     }
