@@ -219,7 +219,9 @@ impl Lexer {
         match self.text.get(self.next_pos) {
             Some('/') => {
                 self.skip_while(|c| c != '\n');
-                self.next_pos += 1;
+                if self.next_pos < self.text.len() {
+                    self.next_pos += 1;
+                }
                 Ok(None)
             }
             Some('*') => {
