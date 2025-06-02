@@ -10,7 +10,6 @@ use l2_compiler_comdes::{
 };
 
 fn main() {
-    std::env::args().for_each(|arg| println!("{arg}"));
     let input_file = std::env::args()
         .skip(1)
         .next()
@@ -52,7 +51,7 @@ fn main() {
 
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
-    let assembler = Command::new("gcc")
+    let mut assembler = Command::new("gcc")
         .arg("-x")
         .arg("assembler")
         .arg("-nostdlib")
@@ -62,5 +61,11 @@ fn main() {
         .stdin(Stdio::piped())
         .spawn()
         .unwrap();
-    assembler.stdin.unwrap().write_all(asm.as_bytes()).unwrap();
+    assembler
+        .stdin
+        .as_mut()
+        .unwrap()
+        .write_all(asm.as_bytes())
+        .unwrap();
+    assembler.wait_with_output().unwrap();
 }
