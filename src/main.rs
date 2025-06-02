@@ -1,4 +1,7 @@
-use std::process::exit;
+use std::{
+    io::Write,
+    process::{Command, Stdio, exit},
+};
 
 use l2_compiler_comdes::{
     lexer,
@@ -11,6 +14,10 @@ fn main() {
         .skip(1)
         .next()
         .expect("Need an input file to compile");
+    let output_file = std::env::args()
+        .skip(2)
+        .next()
+        .expect("Need an output file to compile to");
     let input = std::fs::read_to_string(input_file).unwrap();
 
     let lexed = match lexer::lex(&input) {
@@ -41,4 +48,18 @@ fn main() {
             exit(7);
         }
     }
+
+    let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
+
+    let assembler = Command::new("gcc")
+        .arg("-x")
+        .arg("assembler")
+        .arg("-nostdlib")
+        .arg("-o")
+        .arg(output_file)
+        .arg("-")
+        .stdin(Stdio::piped())
+        .spawn()
+        .unwrap();
+    assembler.stdin.unwrap().write_all(asm.as_bytes()).unwrap();
 }
