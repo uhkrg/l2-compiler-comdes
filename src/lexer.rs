@@ -193,7 +193,7 @@ impl Lexer {
                     LexToken::Asnop(Some(Binop::ShiftL)),
                 )
             }
-            _ => LexToken::Binop(Binop::BitOr),
+            _ => LexToken::Binop(Binop::Less),
         }
     }
 
@@ -211,7 +211,7 @@ impl Lexer {
                     LexToken::Asnop(Some(Binop::ShiftR)),
                 )
             }
-            _ => LexToken::Binop(Binop::BitOr),
+            _ => LexToken::Binop(Binop::Greater),
         }
     }
 
