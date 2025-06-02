@@ -10,6 +10,7 @@ use l2_compiler_comdes::{
 };
 
 fn main() {
+    std::env::args().for_each(|arg| println!("{arg}"));
     let input_file = std::env::args()
         .skip(1)
         .next()
