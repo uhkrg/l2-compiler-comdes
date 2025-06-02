@@ -4,6 +4,7 @@ use crate::parser::elaborator::{EAST, Expression};
 
 pub fn check_var_inits(east: &EAST) -> Result<(), String> {
     let prepared_east = transform_for(east, None);
+    println!("{prepared_east:?}");
     check_var_liveness(&prepared_east).map(|_| ())
 }
 
@@ -109,16 +110,28 @@ fn transform_for(east: &EAST, step: Option<&EAST>) -> EAST {
             Box::new(transform_for(&else_body, step)),
         ),
         EAST::While(exp, body) => EAST::While(exp.to_owned(), Box::new(transform_for(&body, step))),
-        EAST::For(init, exp, step, body) => EAST::Seq(vec![
-            *init.to_owned(),
-            EAST::While(
+        EAST::For(init, exp, step, body) => {
+            let without_init = EAST::While(
                 exp.to_owned(),
                 Box::new(EAST::Seq(vec![
                     transform_for(&body, Some(&step)),
                     *step.to_owned(),
                 ])),
-            ),
-        ]),
+            );
+
+            match &**init {
+                EAST::Declare(var, typ, rest) => EAST::Declare(
+                    var.to_owned(),
+                    typ.to_owned(),
+                    Box::new(EAST::Seq(vec![*rest.to_owned(), without_init])),
+                ),
+                EAST::Assign(var, exp) => EAST::Seq(vec![
+                    EAST::Assign(var.to_owned(), exp.to_owned()),
+                    without_init,
+                ]),
+                _ => unreachable!("encountered invalid init in var init check"),
+            }
+        }
         EAST::Return(exp) => EAST::Return(exp.to_owned()),
         EAST::Nop => EAST::Nop,
         EAST::Seq(stmts) => EAST::Seq(stmts.iter().map(|stmt| transform_for(stmt, step)).collect()),
