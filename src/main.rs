@@ -67,5 +67,5 @@ fn main() {
         .unwrap()
         .write_all(asm.as_bytes())
         .unwrap();
-    assembler.wait_with_output().unwrap();
+    assembler.wait().unwrap();
 }
