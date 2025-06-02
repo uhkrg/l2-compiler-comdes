@@ -1,5 +1,7 @@
 use std::{fmt::Display, num::ParseIntError};
 
+use crate::parser::Type;
+
 #[derive(Debug)]
 pub enum LexerError {
     EOF(String),
@@ -37,6 +39,48 @@ impl Display for ParserError {
             ParserError::EOF(missing) => write!(f, "end of file, but expected {missing}"),
             ParserError::Mismatch { found, expected } => {
                 write!(f, "expected {expected} but found {found}")
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum StaticAnalysisError {
+    TypeError(TypeError),
+}
+
+impl Display for StaticAnalysisError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StaticAnalysisError::TypeError(e) => write!(f, "problem in type check: {e}"),
+        }
+    }
+}
+
+impl From<TypeError> for StaticAnalysisError {
+    fn from(value: TypeError) -> Self {
+        StaticAnalysisError::TypeError(value)
+    }
+}
+
+#[derive(Debug)]
+pub enum TypeError {
+    Mismatch { expected: Type, found: Type },
+    MissingDec(String),
+    Redecleration(String),
+}
+
+impl Display for TypeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TypeError::Mismatch { expected, found } => write!(
+                f,
+                "mismatched type: expected {:?} but found {:?}",
+                expected, found
+            ),
+            TypeError::MissingDec(var) => write!(f, "Variable {var} not declared before use"),
+            TypeError::Redecleration(var) => {
+                write!(f, "Variable {var} declared multiple times in same scope")
             }
         }
     }

@@ -3,6 +3,7 @@ use std::process::exit;
 use l2_compiler_comdes::{
     lexer,
     parser::{self, elaborator},
+    static_analysis,
 };
 
 fn main() {
@@ -15,7 +16,7 @@ fn main() {
     let lexed = match lexer::lex(&input) {
         Ok(lexed) => lexed,
         Err(error) => {
-            eprintln!("{error:?}");
+            eprintln!("{error}");
             exit(42);
         }
     };
@@ -24,7 +25,7 @@ fn main() {
     let parsed = match parser::parse(lexed) {
         Ok(parsed) => parsed,
         Err(error) => {
-            eprintln!("{error:?}");
+            eprintln!("{error}");
             exit(42);
         }
     };
@@ -32,4 +33,12 @@ fn main() {
 
     let elaborated = elaborator::elaborate(parsed);
     println!("{elaborated:?}\n");
+
+    match static_analysis::run_static_checks(elaborated.clone()) {
+        Ok(()) => (),
+        Err(error) => {
+            eprintln!("{error}");
+            exit(7);
+        }
+    }
 }

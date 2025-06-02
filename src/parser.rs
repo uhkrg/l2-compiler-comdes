@@ -13,7 +13,7 @@ pub struct AST {
 pub type Block = Vec<Statement>;
 pub type Ident = String;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Type {
     Int,
     Bool,

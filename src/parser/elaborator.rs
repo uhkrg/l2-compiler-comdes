@@ -2,7 +2,7 @@ use crate::{lexer, parser::Type};
 
 use super::{AST, Ident, SimpStatement, Statement};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum EAST {
     Assign(Ident, Expression),
     While(Expression, Box<EAST>),
@@ -16,7 +16,7 @@ pub enum EAST {
     Nop,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     True,
     False,
@@ -27,7 +27,7 @@ pub enum Expression {
     Ternary(Box<Expression>, Box<Expression>, Box<Expression>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Binop {
     Less,
     Leq,
