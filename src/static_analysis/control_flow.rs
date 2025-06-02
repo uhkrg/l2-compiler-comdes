@@ -34,7 +34,7 @@ pub fn check_steps(program: &EAST) -> bool {
             }
             check_steps(&body)
         }
-        EAST::Break => false,
+        EAST::Break => true,
         EAST::Seq(stmts) => stmts.iter().all(check_steps),
         EAST::Nop => true,
     }
