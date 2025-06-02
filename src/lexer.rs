@@ -293,7 +293,9 @@ impl Lexer {
         } else {
             let num_text = chars.into_iter().collect::<String>();
 
-            Ok(LexToken::IntConst(parse_num(num_text, 16)?))
+            Ok(LexToken::IntConst(
+                u32::from_str_radix(&num_text, 16)? as i32
+            ))
         }
     }
 
@@ -309,7 +311,7 @@ impl Lexer {
             .iter()
             .cloned()
             .collect::<String>();
-        Ok(LexToken::IntConst(parse_num(num_text, 10)?))
+        Ok(LexToken::IntConst(parse_decnum(num_text)?))
     }
 
     const RESERVED: [&str; 21] = [
@@ -368,11 +370,11 @@ impl Lexer {
     }
 }
 
-fn parse_num(input: String, radix: u32) -> Result<i32, LexerError> {
-    let through_unsized = u32::from_str_radix(&input, radix)? as i32;
+fn parse_decnum(input: String) -> Result<i32, LexerError> {
+    let through_unsized = input.parse::<u32>()? as i32;
     if through_unsized == i32::MIN {
         Ok(through_unsized)
     } else {
-        Ok(i32::from_str_radix(&input, radix)?)
+        Ok(input.parse()?)
     }
 }
