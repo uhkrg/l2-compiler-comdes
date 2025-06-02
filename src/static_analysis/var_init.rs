@@ -120,6 +120,7 @@ fn transform_for(east: &EAST, step: Option<&EAST>) -> EAST {
             );
 
             match &**init {
+                EAST::Nop => without_init,
                 EAST::Declare(var, typ, rest) => EAST::Declare(
                     var.to_owned(),
                     typ.to_owned(),
