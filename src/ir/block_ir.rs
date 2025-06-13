@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     ir::tree_ir::{self, TreeIR},
     lexer::Unop,
@@ -20,7 +22,7 @@ pub enum Statement {
     Return(Value),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Value {
     True,
     False,
@@ -34,11 +36,15 @@ pub fn tree_ir_to_block_ir(ir: TreeIR) -> BlockIR {
 
 struct TranslationContext {
     temp_counter: i64,
+    label_mapping: HashMap<usize, usize>,
 }
 
 impl TranslationContext {
     fn new() -> Self {
-        Self { temp_counter: 0 }
+        Self {
+            temp_counter: 0,
+            label_mapping: HashMap::new(),
+        }
     }
 
     fn next_temp(&mut self) -> Ident {
@@ -98,16 +104,32 @@ impl TranslationContext {
                         .last_mut()
                         .unwrap()
                         .push(Statement::CondJump(v, target as usize));
+                    blocks.push(vec![]);
                 }
-                tree_ir::Command::Jump(target) => blocks
-                    .last_mut()
-                    .unwrap()
-                    .push(Statement::Jump(target as usize)),
-                tree_ir::Command::Label(_) => blocks.push(vec![]),
+                tree_ir::Command::Jump(target) => {
+                    blocks
+                        .last_mut()
+                        .unwrap()
+                        .push(Statement::Jump(target as usize));
+                    blocks.push(vec![]);
+                }
+                tree_ir::Command::Label(l) => {
+                    self.label_mapping.insert(l as usize, blocks.len());
+                    blocks.push(vec![])
+                }
                 tree_ir::Command::Return(exp) => {
                     let (mut b, v) = self.translate_pure_expression(exp);
                     blocks.last_mut().unwrap().append(&mut b);
                     blocks.last_mut().unwrap().push(Statement::Return(v));
+                }
+            }
+        }
+        for block in &mut blocks {
+            for stmt in block {
+                if let Statement::CondJump(v, target) = stmt {
+                    *stmt = Statement::CondJump(v.to_owned(), self.label_mapping[target]);
+                } else if let Statement::Jump(target) = stmt {
+                    *stmt = Statement::Jump(self.label_mapping[target]);
                 }
             }
         }
