@@ -4,7 +4,7 @@ use std::{
 };
 
 use l2_compiler_comdes::{
-    lexer,
+    ir, lexer,
     parser::{self, elaborator},
     static_analysis,
 };
@@ -48,6 +48,9 @@ fn main() {
             exit(7);
         }
     }
+
+    let tree_ir = ir::translate_tree_ir(elaborated);
+    println!("{tree_ir:?}\n");
 
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
