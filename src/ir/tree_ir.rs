@@ -166,7 +166,7 @@ impl TranslationContext {
             EAST::Declare(_, _, stmt) => self.translate_statement(*stmt, cont_label, break_label),
             EAST::Assign(var, exp) => {
                 let (mut c, p) = self.translate_expression(&exp);
-                c.push(Command::Assign(var, p));
+                c.push(Command::Assign(format!("o_{var}"), p));
                 c
             }
             EAST::If(cond, then_body, else_body) => {
