@@ -4,7 +4,6 @@ use crate::parser::elaborator::{EAST, Expression};
 
 pub fn check_var_inits(east: &EAST) -> Result<(), String> {
     let prepared_east = transform_for(east, None);
-    println!("{prepared_east:?}");
     check_var_liveness(&prepared_east).map(|_| ())
 }
 
