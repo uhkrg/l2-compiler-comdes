@@ -34,6 +34,27 @@ pub enum PureBinop {
     ShiftR,
 }
 
+impl From<PureBinop> for Binop {
+    fn from(value: PureBinop) -> Self {
+        match value {
+            PureBinop::Less => Binop::Less,
+            PureBinop::Leq => Binop::Leq,
+            PureBinop::Greater => Binop::Greater,
+            PureBinop::Geq => Binop::Geq,
+            PureBinop::Eq => Binop::Eq,
+            PureBinop::Neq => Binop::Neq,
+            PureBinop::Add => Binop::Add,
+            PureBinop::Minus => Binop::Minus,
+            PureBinop::Mul => Binop::Mul,
+            PureBinop::BitAnd => Binop::BitAnd,
+            PureBinop::BitXor => Binop::BitXor,
+            PureBinop::BitOr => Binop::BitOr,
+            PureBinop::ShiftL => Binop::ShiftL,
+            PureBinop::ShiftR => Binop::ShiftR,
+        }
+    }
+}
+
 type Label = i64;
 
 #[derive(Clone, Debug)]
@@ -50,6 +71,15 @@ pub enum Command {
 pub enum CommandBinop {
     Div,
     Mod,
+}
+
+impl From<CommandBinop> for Binop {
+    fn from(value: CommandBinop) -> Self {
+        match value {
+            CommandBinop::Div => Binop::Div,
+            CommandBinop::Mod => Binop::Mod,
+        }
+    }
 }
 
 pub type TreeIR = Vec<Command>;

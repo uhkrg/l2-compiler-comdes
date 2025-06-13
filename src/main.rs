@@ -52,6 +52,9 @@ fn main() {
     let tree_ir = ir::translate_tree_ir(elaborated);
     println!("{tree_ir:?}\n");
 
+    let block_ir = ir::tree_ir_to_block_ir(tree_ir);
+    println!("{block_ir:?}\n");
+
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
     let mut assembler = Command::new("gcc")
