@@ -127,6 +127,7 @@ impl TranslationContext {
                     let (mut b, v) = self.translate_pure_expression(exp);
                     blocks.last_mut().unwrap().append(&mut b);
                     blocks.last_mut().unwrap().push(Statement::Return(v));
+                    next_block(&mut blocks);
                 }
             }
         }

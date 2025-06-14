@@ -6,7 +6,7 @@ use std::{
 use l2_compiler_comdes::{
     ir, lexer,
     parser::{self, elaborator},
-    static_analysis,
+    ssa, static_analysis,
 };
 
 fn main() {
@@ -54,6 +54,9 @@ fn main() {
 
     let block_ir = ir::tree_ir_to_block_ir(tree_ir);
     println!("{block_ir:?}\n");
+
+    let ssa = ssa::ssa(block_ir);
+    println!("{ssa:?}\n");
 
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
