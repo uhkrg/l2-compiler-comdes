@@ -78,6 +78,12 @@ impl TranslationContext {
 
     fn translate_tree_ir(&mut self, ir: tree_ir::TreeIR) -> BlockIR {
         let mut blocks = vec![vec![]];
+        fn next_block(blocks: &mut Vec<Vec<Statement>>) {
+            if !blocks.last().unwrap().is_empty() {
+                blocks.push(vec![]);
+            }
+        }
+
         for cmd in ir {
             match cmd {
                 tree_ir::Command::Assign(var, exp) => {
@@ -104,18 +110,18 @@ impl TranslationContext {
                         .last_mut()
                         .unwrap()
                         .push(Statement::CondJump(v, target as usize));
-                    blocks.push(vec![]);
+                    next_block(&mut blocks);
                 }
                 tree_ir::Command::Jump(target) => {
                     blocks
                         .last_mut()
                         .unwrap()
                         .push(Statement::Jump(target as usize));
-                    blocks.push(vec![]);
+                    next_block(&mut blocks);
                 }
                 tree_ir::Command::Label(l) => {
-                    self.label_mapping.insert(l as usize, blocks.len());
-                    blocks.push(vec![])
+                    next_block(&mut blocks);
+                    self.label_mapping.insert(l as usize, blocks.len() - 1);
                 }
                 tree_ir::Command::Return(exp) => {
                     let (mut b, v) = self.translate_pure_expression(exp);
