@@ -58,6 +58,9 @@ fn main() {
     let ssa = ssa::ssa(block_ir);
     println!("{ssa:?}\n");
 
+    let after_ssa = ssa::resolve_phis(ssa);
+    println!("{after_ssa:?}\n");
+
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
     let mut assembler = Command::new("gcc")

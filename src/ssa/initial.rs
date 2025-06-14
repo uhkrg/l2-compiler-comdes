@@ -8,9 +8,9 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Block {
-    parameters: HashMap<Ident, Ident>,
-    block: BasicBlock,
-    end: HashMap<Ident, Ident>,
+    pub parameters: HashMap<Ident, Ident>,
+    pub block: BasicBlock,
+    pub end: HashMap<Ident, Ident>,
 }
 
 fn calc_name(v: &Ident, map: &HashMap<Ident, u64>) -> Ident {
