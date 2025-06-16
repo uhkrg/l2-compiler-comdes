@@ -34,13 +34,14 @@ impl InterferenceGraph {
         }
     }
 
-    fn get_idx_or_new(&mut self, x: String) -> usize {
-        let idx = *self.mapping.entry(x.clone()).or_insert(self.edges.len());
-        if self.edges.len() == idx {
-            self.edges.push(HashSet::new());
-            self.rev_mapping.push(x);
-        }
-        idx
+    fn new_id(&mut self, x: String) {
+        self.mapping.insert(x.clone(), self.edges.len());
+        self.edges.push(HashSet::new());
+        self.rev_mapping.push(x);
+    }
+
+    fn get_idx(&mut self, x: &String) -> usize {
+        *self.mapping.get(x).unwrap()
     }
 
     fn push_edge(&mut self, p: usize, q: usize) {
@@ -52,13 +53,20 @@ impl InterferenceGraph {
 fn gen_interference_graph(ir: &BlockIR) -> InterferenceGraph {
     let liveness = liveness_after(ir);
     let mut graph = InterferenceGraph::new();
+    for x in liveness
+        .iter()
+        .flatten()
+        .fold(HashSet::new(), |acc, new| acc.union(new).cloned().collect())
+    {
+        graph.new_id(x);
+    }
     for (x, y) in liveness
         .into_iter()
         .flatten()
         .flat_map(liveness_to_interferences)
     {
-        let x_idx = graph.get_idx_or_new(x);
-        let y_idx = graph.get_idx_or_new(y);
+        let x_idx = graph.get_idx(&x);
+        let y_idx = graph.get_idx(&y);
         graph.push_edge(x_idx, y_idx);
     }
     graph
