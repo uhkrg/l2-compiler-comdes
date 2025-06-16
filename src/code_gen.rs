@@ -246,12 +246,17 @@ fn asm_assign_binop_shift(
             format!("mov {}, %ecx\n{op} %cl, {target}\n", val2.to_asm(regs))
         }
     };
-    if loc_var.is_reg() || is_reg_var(&val1, regs) {
-        format!(
-            "mov {}, {loc_var}\n{}",
-            val1.to_asm(regs),
+    if (loc_var.is_reg() || is_reg_var(&val1, regs)) && (format!("{loc_var}") != val2.to_asm(regs))
+    {
+        if format!("{loc_var}") == val1.to_asm(regs) {
             shift(format!("{loc_var}"))
-        )
+        } else {
+            format!(
+                "mov {}, {loc_var}\n{}",
+                val1.to_asm(regs),
+                shift(format!("{loc_var}"))
+            )
+        }
     } else {
         format!(
             "mov {}, %eax\n{}mov %eax, {loc_var}\n",
