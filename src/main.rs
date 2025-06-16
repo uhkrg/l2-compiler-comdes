@@ -6,7 +6,7 @@ use std::{
 use l2_compiler_comdes::{
     ir, lexer,
     parser::{self, elaborator},
-    ssa, static_analysis,
+    reg_alloc, ssa, static_analysis,
 };
 
 fn main() {
@@ -60,6 +60,9 @@ fn main() {
 
     let after_ssa = ssa::resolve_phis(ssa);
     println!("{after_ssa:?}\n");
+
+    let regs = reg_alloc::reg_alloc(&after_ssa);
+    println!("{regs:?}\n");
 
     let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
 
