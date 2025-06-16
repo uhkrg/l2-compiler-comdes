@@ -159,7 +159,7 @@ fn asm_assign_binop_cmp(
             val1.to_asm(regs)
         )
     };
-    format!("{cmp}movl $0, {loc_var}\n{cmov}l $-1, {loc_var}\n")
+    format!("{cmp}movl $0, {loc_var}\nmov $-1, %eax\n{cmov} %eax, {loc_var}\n")
 }
 
 fn asm_assign_binop_assoc_comm(
