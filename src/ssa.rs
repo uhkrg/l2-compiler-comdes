@@ -4,7 +4,7 @@ use crate::{
 };
 
 mod initial;
-mod liveness;
+pub mod liveness;
 mod unreachable;
 
 pub fn ssa(ir: BlockIR) -> Vec<Block> {
