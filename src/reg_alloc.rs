@@ -4,7 +4,7 @@ use crate::{ir::block_ir::BlockIR, parser::Ident, reg_alloc::liveness::liveness_
 
 mod liveness;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Location {
     Register(String),
     Stack(usize),
@@ -139,7 +139,7 @@ fn calc_simplicial_elimination_ordering(graph: &InterferenceGraph) -> Vec<usize>
 fn color_to_location(color: usize) -> Location {
     match color {
         0 => unreachable!(),
-        1 => Location::Register("%ecx".to_string()),
+        1 => Location::Register("%ebx".to_string()),
         2 => Location::Register("%esi".to_string()),
         3 => Location::Register("%edi".to_string()),
         4 => Location::Register("%r8d".to_string()),

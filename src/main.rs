@@ -4,7 +4,7 @@ use std::{
 };
 
 use l2_compiler_comdes::{
-    ir, lexer,
+    code_gen, ir, lexer,
     parser::{self, elaborator},
     reg_alloc, ssa, static_analysis,
 };
@@ -64,7 +64,8 @@ fn main() {
     let regs = reg_alloc::reg_alloc(&after_ssa);
     println!("{regs:?}\n");
 
-    let asm = ".globl _start\n.text\n_start:\nmov $0,%rdi\nmov $0x3C,%rax\nsyscall\n";
+    let asm = code_gen::asm(after_ssa, &regs);
+    println!("{asm}");
 
     let mut assembler = Command::new("gcc")
         .arg("-x")

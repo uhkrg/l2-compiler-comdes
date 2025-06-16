@@ -1,3 +1,4 @@
+pub mod code_gen;
 mod errors;
 pub mod ir;
 pub mod lexer;
