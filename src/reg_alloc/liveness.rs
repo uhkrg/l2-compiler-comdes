@@ -26,12 +26,17 @@ pub fn liveness_after(ir: &BlockIR) -> Vec<Vec<HashSet<Ident>>> {
                     Some(crate::ir::block_ir::Statement::Return(_)) => HashSet::new(),
                     _ => block_liveness.get(idx + 1).unwrap().clone(),
                 },
+                &block_liveness,
             )
         })
         .collect()
 }
 
-fn liveness_after_basic_block(block: &BasicBlock, mut live: HashSet<Ident>) -> Vec<HashSet<Ident>> {
+fn liveness_after_basic_block(
+    block: &BasicBlock,
+    mut live: HashSet<Ident>,
+    block_liveness: &Vec<HashSet<String>>,
+) -> Vec<HashSet<Ident>> {
     let add_generated = |live: &mut HashSet<Ident>, v: &Value| match v {
         Value::True => (),
         Value::False => (),
@@ -56,7 +61,10 @@ fn liveness_after_basic_block(block: &BasicBlock, mut live: HashSet<Ident>) -> V
                 live.remove(var);
                 add_generated(&mut live, val);
             }
-            crate::ir::block_ir::Statement::CondJump(value, _) => add_generated(&mut live, value),
+            crate::ir::block_ir::Statement::CondJump(value, target) => {
+                add_generated(&mut live, value);
+                live.extend(block_liveness[*target].iter().cloned());
+            }
             crate::ir::block_ir::Statement::Jump(_) => (),
             crate::ir::block_ir::Statement::Return(value) => add_generated(&mut live, value),
         }
