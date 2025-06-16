@@ -57,7 +57,7 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
             format!("cmpl $0, {loc_var}\njnz l{target}\n")
         }
         Statement::CondJump(val, target) => {
-            format!("cmpl $0, {val}\njnz l{target}\n")
+            format!("mov {val}, %eax\ncmpl $0, %eax\njnz l{target}\n")
         }
         Statement::Jump(target) => format!("jmp l{target}\n"),
         Statement::Return(Value::Var(v)) => format!("mov {}, %eax\nret\n", var_to_loc(&v, regs)),
