@@ -241,7 +241,7 @@ fn asm_assign_binop_shift(
     };
     let shift = |target| {
         if let Value::IntConst(c) = val2 {
-            format!("{op} ${}, {target}\n", c & 0xff)
+            format!("{op} ${}, {target}\n", c & 0x1f)
         } else {
             format!("mov {}, %ecx\n{op} %cl, {target}\n", val2.to_asm(regs))
         }
