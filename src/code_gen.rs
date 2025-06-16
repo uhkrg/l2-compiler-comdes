@@ -33,7 +33,7 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
                 format!("mov {loc_val}, %eax\nmov %eax, {loc_var}\n")
             }
         }
-        Statement::Assign(var, val) => format!("mov {val}, {}\n", var_to_loc(&var, regs)),
+        Statement::Assign(var, val) => format!("movl {val}, {}\n", var_to_loc(&var, regs)),
         Statement::AssignBinop(var, val1, binop, val2) => {
             asm_assign_binop(var, val1, binop, val2, regs)
         }
