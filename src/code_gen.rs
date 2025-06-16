@@ -54,10 +54,10 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
         }
         Statement::CondJump(Value::Var(var), target) => {
             let loc_var = var_to_loc(&var, regs);
-            format!("cmp $0, {loc_var}\njnz l{target}\n")
+            format!("cmpl $0, {loc_var}\njnz l{target}\n")
         }
         Statement::CondJump(val, target) => {
-            format!("cmp $0, {val}\njnz l{target}\n")
+            format!("cmpl $0, {val}\njnz l{target}\n")
         }
         Statement::Jump(target) => format!("jmp l{target}\n"),
         Statement::Return(Value::Var(v)) => format!("mov {}, %eax\nret\n", var_to_loc(&v, regs)),
@@ -159,7 +159,7 @@ fn asm_assign_binop_cmp(
             val1.to_asm(regs)
         )
     };
-    format!("{cmp}movl $0, {loc_var}\nmov $-1, %eax\n{cmov} %eax, {loc_var}\n")
+    format!("{cmp}movl $0, %ecx\nmov $-1, %eax\n{cmov} %eax, %ecx\nmov %ecx, {loc_var}\n")
 }
 
 fn asm_assign_binop_assoc_comm(
