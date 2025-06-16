@@ -142,21 +142,21 @@ fn asm_assign_binop_cmp(
 ) -> String {
     let loc_var = var_to_loc(&var, regs);
     let cmov = match binop {
-        Binop::Less => "cmovb",
-        Binop::Leq => "cmovbe",
-        Binop::Greater => "cmova",
-        Binop::Geq => "cmovae",
+        Binop::Less => "cmovl",
+        Binop::Leq => "cmovle",
+        Binop::Greater => "cmovg",
+        Binop::Geq => "cmovge",
         Binop::Eq => "cmove",
         Binop::Neq => "cmovne",
         _ => unreachable!(),
     };
-    let cmp = if is_reg_var(&val2, regs) {
-        format!("cmp {}, {}\n", val1.to_asm(regs), val2.to_asm(regs))
+    let cmp = if is_reg_var(&val1, regs) {
+        format!("cmp {}, {}\n", val2.to_asm(regs), val1.to_asm(regs))
     } else {
         format!(
             "mov {}, %eax\ncmp {}, %eax\n",
+            val1.to_asm(regs),
             val2.to_asm(regs),
-            val1.to_asm(regs)
         )
     };
     format!("{cmp}movl $0, %ecx\nmov $-1, %eax\n{cmov} %eax, %ecx\nmov %ecx, {loc_var}\n")
