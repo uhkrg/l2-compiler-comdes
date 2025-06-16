@@ -30,7 +30,7 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
             } else if loc_val.is_reg() || loc_var.is_reg() {
                 format!("mov {loc_val}, {loc_var}\n")
             } else {
-                format!("mov {loc_val}, %rax\nmov %rax, {loc_var}\n")
+                format!("mov {loc_val}, %eax\nmov %eax, {loc_var}\n")
             }
         }
         Statement::Assign(var, val) => format!("mov {val}, {}\n", var_to_loc(&var, regs)),
@@ -45,7 +45,7 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
             } else if loc_var.is_reg() || loc_val.is_reg() {
                 format!("mov {loc_val}, {loc_var}\n{unop} {loc_var}\n")
             } else {
-                format!("mov {loc_val}, %rax\n{unop} %rax\nmov %rax, {loc_var}\n")
+                format!("mov {loc_val}, %eax\n{unop} %eax\nmov %eax, {loc_var}\n")
             }
         }
         Statement::AssignUnop(var, unop, val) => {
@@ -60,8 +60,8 @@ fn asm_stmt(stmt: Statement, regs: &HashMap<String, Location>) -> String {
             format!("cmp {val}, 0\njnz l{target}\n")
         }
         Statement::Jump(target) => format!("jmp l{target}\n"),
-        Statement::Return(Value::Var(v)) => format!("mov {}, %rax\nret\n", var_to_loc(&v, regs)),
-        Statement::Return(val) => format!("mov {val}, %rax\nret\n"),
+        Statement::Return(Value::Var(v)) => format!("mov {}, %eax\nret\n", var_to_loc(&v, regs)),
+        Statement::Return(val) => format!("mov {val}, %eax\nret\n"),
     }
 }
 
